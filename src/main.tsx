@@ -49,11 +49,12 @@ export default class MyObsidianPlugin extends Plugin {
 					constructor(controller: QueryController, parentEl: HTMLElement) {
 						super(controller);
 						this.containerEl = parentEl.createDiv(`bases-${this.type}-view-container`);
-						this.root = createRoot(this.containerEl);
 					}
 
 					public onDataUpdated(): void {
+						this.root?.unmount();
 						this.containerEl.empty();
+						this.root = createRoot(this.containerEl);
 
 						this.root.render(
 							<React.StrictMode>

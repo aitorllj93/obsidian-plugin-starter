@@ -1,6 +1,6 @@
 import React from "react";
 
-const App = (props: any) => {
+const MyCodeBlock = (props: any) => {
 	const { data, getSectionInfo, settings, app } = props;
 
 	return (
@@ -12,4 +12,4 @@ const App = (props: any) => {
 	);
 };
 
-export default App;
+export default MyCodeBlock;

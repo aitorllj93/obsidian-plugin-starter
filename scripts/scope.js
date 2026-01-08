@@ -8,7 +8,7 @@ const css = fs.readFileSync(`build/${manifest.id}/styles.css`, "utf8");
 const out = postcss()
 	.use(
 		prefixer({
-			prefix: `#${manifest.id}`,
+			prefix: `.${manifest.id}`,
 			transform: function (prefix, selector, prefixedSelector, filePath, rule) {
 				if (selector === ':root' || selector === ':host') {
 					return prefix;

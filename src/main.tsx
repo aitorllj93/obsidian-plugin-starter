@@ -1,13 +1,14 @@
-import { Plugin } from "obsidian";
+import { BasesView, Plugin, QueryController } from "obsidian";
 
 import React from "react";
-import { createRoot } from "react-dom/client";
+import { createRoot, Root } from "react-dom/client";
 
 import { defaultSettings, TSettings } from "@/settings";
 import { MyObsidianPluginSettingsTab } from "@/settings-tab";
-import { loadData } from "@/saveload";
+import { loadData } from "@/utils/codeblock";
 
-import App from "@/components/App";
+import MyCodeBlock from "@/components/MyCodeBlock";
+import MyBasesView, { MY_BASES_VIEW_TYPE_ID } from "@/components/MyBasesView";
 
 export default class MyObsidianPlugin extends Plugin {
 	settings: TSettings;
@@ -25,7 +26,7 @@ export default class MyObsidianPlugin extends Plugin {
 				const root = createRoot(e);
 				root.render(
 					<React.StrictMode>
-						<App
+						<MyCodeBlock
 							data={data}
 							getSectionInfo={() => i.getSectionInfo(e)}
 							settings={this.settings}
@@ -35,6 +36,48 @@ export default class MyObsidianPlugin extends Plugin {
 				);
 			}
 		);
+
+		this.registerBasesView(MY_BASES_VIEW_TYPE_ID, {
+			name: "My Bases View",
+			icon: 'lucide-graduation-cap',
+			factory: (controller, containerEl) => {
+				const MyBasesViewClass = class extends BasesView {
+					readonly type = MY_BASES_VIEW_TYPE_ID;
+					private containerEl: HTMLElement;
+					private root: Root;
+
+					constructor(controller: QueryController, parentEl: HTMLElement) {
+						super(controller);
+						this.containerEl = parentEl.createDiv(`bases-${this.type}-view-container`);
+						this.root = createRoot(this.containerEl);
+					}
+
+					public onDataUpdated(): void {
+						this.containerEl.empty();
+
+						this.root.render(
+							<React.StrictMode>
+								<MyBasesView app={this.app} containerEl={this.containerEl} config={this.config} data={this.data} />
+							</React.StrictMode>
+						);
+					}
+				}
+
+				return new MyBasesViewClass(controller, containerEl);
+			},
+			options: () => ([
+			  {
+				// The type of option. 'text' is a text input.
+				type: 'text',
+				// The name displayed in the settings menu.
+				displayName: 'Property separator',
+				// The value saved to the view settings.
+				key: 'separator',
+				// The default value for this option.
+				default: ' - ',
+			  },
+		  ])
+		});
 
 		this.addCommand({
 			id: `insert`,
